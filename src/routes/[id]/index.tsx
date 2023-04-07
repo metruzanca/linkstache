@@ -1,4 +1,4 @@
-import { useAppContext } from "~/lib/firebase";
+import { useAppContext } from "~/lib/appContext";
 import { getCredentials } from "~/lib/util";
 
 export default function Sync() {

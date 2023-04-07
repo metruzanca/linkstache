@@ -1,8 +1,5 @@
 import { mount, StartClient } from "solid-start/entry-client";
-
-import '~/lib/firebase'
-import { FirebaseProvider } from "~/lib/firebase";
-
+import { FirebaseProvider } from "./lib/appContext";
 
 mount(() => (
   <FirebaseProvider>
