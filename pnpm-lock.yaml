@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@solidjs/meta': ^0.28.2
   '@solidjs/router': ^0.8.2
+  '@types/uuid': ^9.0.1
   autoprefixer: ^10.4.13
   firebase: ^9.19.1
   postcss: ^8.4.21
@@ -13,6 +14,7 @@ specifiers:
   tailwindcss: ^3.2.4
   typescript: ^4.9.4
   undici: ^5.15.1
+  uuid: ^9.0.0
   vite: ^4.1.4
 
 dependencies:
@@ -23,8 +25,10 @@ dependencies:
   solid-js: 1.7.2
   solid-start: 0.2.26_on5hpifgnnb7o3ttw6adhx5vwy
   undici: 5.21.0
+  uuid: 9.0.0
 
 devDependencies:
+  '@types/uuid': 9.0.1
   autoprefixer: 10.4.14_postcss@8.4.21
   postcss: 8.4.21
   solid-start-node: 0.2.26_kee3qhdktj573l7x67nbwkfloi
@@ -2031,6 +2035,10 @@ packages:
   /@types/resolve/1.20.2:
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
+  /@types/uuid/9.0.1:
+    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
+    dev: true
+
   /accepts/1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
@@ -3537,6 +3545,11 @@ packages:
   /utils-merge/1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /validate-html-nesting/1.2.1:
     resolution: {integrity: sha512-T1ab131NkP3BfXB7KUSgV7Rhu81R2id+L6NaJ7NypAAG5iV6gXnPpQE5RK1fvb+3JYsPTL+ihWna5sr5RN9gaQ==}

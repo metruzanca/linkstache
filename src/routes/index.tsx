@@ -1,31 +1,20 @@
-import { A } from "solid-start";
-import Counter from "~/components/Counter";
+import { Component, Show } from "solid-js";
+import { useAppContext } from "~/lib/firebase";
 
-export default function Home() {
+const Debug: Component<{ data: any }> = (props) => (
+  <Show when={props.data} keyed>
+    <pre>
+      {JSON.stringify(props.data, null, 2)}
+    </pre>
+  </Show>
+)
+
+export default function App() {
+  const {user, sync} = useAppContext()
+
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
-        Hello world!
-      </h1>
-      <Counter />
-      <p class="mt-8">
-        Visit{" "}
-        <a
-          href="https://solidjs.com"
-          target="_blank"
-          class="text-sky-600 hover:underline"
-        >
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
-      </p>
-      <p class="my-4">
-        <span>Home</span>
-        {" - "}
-        <A href="/about" class="text-sky-600 hover:underline">
-          About Page
-        </A>{" "}
-      </p>
+    <main class="mx-auto text-gray-700 p-4">
+      <Debug data={user()} />
     </main>
   );
 }
