@@ -12,30 +12,9 @@ function createStyle(css) {
   return style;
 }
 
-function createNotification() {
-  const notification = createElement('div', { className: 'notification' });
-
-  notification.close = (delay = 0) => {
-    // Transition the notification out.
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      // Remove it from the DOM after the transition is done.
-      setTimeout(() => {
-        notification.remove();
-      }, 1000);
-    }, delay);
-  }
-
-  notification.addEventListener('click', () => {
-    notification.close();
-  });
-
-  return notification;
-}
-
-async function add(url) {
+async function addLink(url) {
   // NOTE: Do not send the decryption key to the server.
-  const { baseUrl, id, decryptionKey } = window.stache
+  const { baseUrl, id, decryptionKey, DEV } = window.stache
   const data = await fetch(`${baseUrl}/api/`, {
     method: 'POST',
     body: JSON.stringify({
@@ -43,51 +22,65 @@ async function add(url) {
       user: { id },
     }),
   });
+
+  if (DEV) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
   return data.json();
 }
 
-function wait(delay) {
-  return new Promise(resolve => setTimeout(resolve, delay));
-}
-
 const globalCss = /*css*/`
-.hidden {
-  transform: translateY(100%);
-}
-.notification {
-  position: fixed;
-  background: #000;
-  color: #fff;
-  border-radius: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  z-index: 9999;
-  top: 0;
-  right: 0;
-  transition: all 0.5s ease;
-  cursor: pointer;
-}
-p {
-  padding: 1rem;
-}
+  .hidden {
+    transform: translateY(100%);
+  }
+  .notification {
+    position: fixed;
+    background: #000;
+    color: #fff;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 9999;
+    top: 0;
+    right: 0;
+    transition: all 0.5s ease;
+    cursor: pointer;
+  }
+  p {
+    padding: 1rem;
+  }
 `;
 
 async function main() {
   const { DEV } = window.stache
-  const notification = createNotification()
+
+  const notification = createElement('div', {
+    className: 'notification',
+    close(delay = 0) {
+      // Transition the notification out.
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        // Remove it from the DOM after the transition is done.
+        setTimeout(() => {
+          notification.remove();
+        }, 1000);
+      }, delay);
+    },
+    onclick: () => this.close(),
+  });
+
+  const paragraph = createElement('p', { textContent: 'Adding to Stache...' });
 
   notification.append(
     createStyle(globalCss),
-    createElement('p', { textContent: 'Adding to Stache...' })
+    paragraph,
   );
 
   document.body.append(notification);
 
-  const json = await add(location.href);
-  if (DEV) {
-    await wait(1000);
-  }
-  p.textContent = json.message
+  const json = await addLink(location.href);
+  paragraph.textContent = json.message
 
   notification.close(1000)
 }
