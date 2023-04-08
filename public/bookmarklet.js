@@ -3,13 +3,15 @@ function createElement(elementName, props = {}) {
   Object.entries(props).forEach(([key, value]) => {
     element[key] = value;
   });
+  // Override the append method to make it return the element.
+  // ... Not a fan of this, but it's the easiest way to give appending a declarative API.
+  element.append = (...children) => {
+    children.forEach(child => {
+      element.appendChild(child);
+    });
+    return element
+  };
   return element;
-}
-
-function createStyle(css) {
-  const style = document.createElement('style');
-  style.textContent = css;
-  return style;
 }
 
 async function addLink(url) {
@@ -30,29 +32,39 @@ async function addLink(url) {
   return data.json();
 }
 
-const globalCss = /*css*/`
-  .hidden {
-    transform: translateY(100%);
-  }
-  .notification {
-    position: fixed;
-    background: #000;
-    color: #fff;
-    border-radius: 0.5rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    z-index: 9999;
-    top: 0;
-    right: 0;
-    transition: all 0.5s ease;
-    cursor: pointer;
-  }
-  p {
-    padding: 1rem;
-  }
-`;
+const globalStyles = createElement('style', {
+  textContent: /*css*/`
+    .hidden {
+      transform: translateY(100%);
+    }
+    .notification {
+      position: fixed;
+      background: #000;
+      color: #fff;
+      border-radius: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      z-index: 9999;
+      top: 0;
+      right: 0;
+      transition: all 0.5s ease;
+      cursor: pointer;
+    }
+    p {
+      padding: 1rem;
+    }
+  `
+})
 
-async function main() {
+/**
+ * Welcome to my poorman's React/Solid.
+ * We've got a function that returns a DOM element.
+ * We've can use setTimeout to simulate onMount.
+ * 
+ * We can use the createElement function to create elements.
+ * We can use the overwritten append method to declaratively add children.
+ */
+function main() {
   const { DEV } = window.stache
 
   const notification = createElement('div', {
@@ -72,17 +84,17 @@ async function main() {
 
   const paragraph = createElement('p', { textContent: 'Adding to Stache...' });
 
-  notification.append(
-    createStyle(globalCss),
+  setTimeout(async () => {
+    const json = await addLink(location.href);
+    paragraph.textContent = json.message
+
+    notification.close(1000)
+  })
+
+  return notification.append(
+    globalStyles,
     paragraph,
   );
-
-  document.body.append(notification);
-
-  const json = await addLink(location.href);
-  paragraph.textContent = json.message
-
-  notification.close(1000)
 }
 
-main();
+document.body.append(main())
