@@ -1,12 +1,9 @@
 import { createSignal, createEffect, createContext, ParentComponent, useContext } from "solid-js";
 import { v4 } from "uuid";
 import { LOCAL_STORAGE } from "./constants";
-import db from "./firebase";
+import { User } from "./types";
 
-export type User = {
-  id: string;
-  decryptionKey: string;
-}
+
 
 const makeUser = (user: Partial<User> = {}): User => ({
   id: v4(),
@@ -55,9 +52,14 @@ const makeAppContext = () => {
     save(newUser)
   }
 
+  
+  const [menuOpen, setMenuOpen] = createSignal(false);
+
+
   return {
     // Signals
     user,
+    menuOpen, setMenuOpen,
 
     // Actions
     sync,

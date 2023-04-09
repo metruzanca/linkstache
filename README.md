@@ -1,3 +1,4 @@
 ## TODO
-- [ ] Disable Firestore Test mode
-
+- [ ] Permissions & security
+  - [x] Encrypted Links
+  - [ ] Disable Firestore Test mode

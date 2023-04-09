@@ -14,26 +14,14 @@ function createElement(elementName, props = {}) {
   return element;
 }
 
-async function addLink(url) {
-  // NOTE: Do not send the decryption key to the server.
-  const { baseUrl, id, decryptionKey, DEV } = window.stache
-  const data = await fetch(`${baseUrl}/api/`, {
-    method: 'POST',
-    body: JSON.stringify({
-      url,
-      user: { id },
-    }),
-  });
-
-  if (DEV) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-
-  return data.json();
-}
-
 const globalStyles = createElement('style', {
   textContent: /*css*/`
+    .linkstache {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      font-size: 16px;
+    }
     .hidden {
       transform: translateY(100%);
     }
@@ -56,22 +44,39 @@ const globalStyles = createElement('style', {
   `
 })
 
+const { baseUrl, id, decryptionKey, DEV } = window.stache
+
+async function addLink(url) {
+  // NOTE: Do not send the decryption key to the server.
+  const data = await fetch(`${baseUrl}/api/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      url,
+      user: { id },
+    }),
+  });
+
+  if (DEV) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  return data.json();
+}
+
 /**
- * Welcome to my poorman's React/Solid.
+ * Welcome to my poorman's Solid.
  * We've got a function that returns a DOM element.
  * We've can use setTimeout to simulate onMount.
  * 
  * We can use the createElement function to create elements.
  * We can use the overwritten append method to declaratively add children.
  */
-function main() {
-  const { DEV } = window.stache
-
+function Main() {
   const notification = createElement('div', {
     className: 'notification',
     close(delay = 0) {
-      // Transition the notification out.
       setTimeout(() => {
+        // Transition the notification out.
         notification.style.opacity = '0';
         // Remove it from the DOM after the transition is done.
         setTimeout(() => {
@@ -79,7 +84,7 @@ function main() {
         }, 1000);
       }, delay);
     },
-    onclick: () => this.close(),
+    onclick: () => notification.close(),
   });
 
   const paragraph = createElement('p', { textContent: 'Adding to Stache...' });
@@ -91,10 +96,14 @@ function main() {
     notification.close(1000)
   })
 
-  return notification.append(
+  const container = createElement('div', { className: 'linkstache' });
+
+  return container.append(
     globalStyles,
-    paragraph,
-  );
+    notification.append(
+      paragraph,
+    ),
+  )
 }
 
-document.body.append(main())
+document.body.append(Main())

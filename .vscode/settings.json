@@ -2,5 +2,6 @@
   "cSpell.words": [
     "Firestore",
     "Stache"
-  ]
+  ],
+  "vitest.commandLine": "npx vitest",
 }

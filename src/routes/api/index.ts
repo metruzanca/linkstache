@@ -18,11 +18,6 @@ export async function POST(props: APIEvent) {
     });
   }
 
-
-  // await setDoc(doc(db, schemas.stache.name, id), {
-  //   id,
-  // });
-
   if (!body?.url) {
     return json({
       message: 'No body'
