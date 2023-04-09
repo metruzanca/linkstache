@@ -71,7 +71,7 @@ type AppContext = ReturnType<typeof makeAppContext>
 const initialContext = makeAppContext();
 const appContext = createContext<AppContext>(initialContext);
 
-export const FirebaseProvider: ParentComponent = (props) => (
+export const AppContextProvider: ParentComponent = (props) => (
   <appContext.Provider value={initialContext}>
     {props.children}
   </appContext.Provider>

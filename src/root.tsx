@@ -13,6 +13,7 @@ import {
 } from "solid-start";
 import "./root.css";
 import { Navigation } from "./lib/components";
+import { AppContextProvider } from "./lib/appContext";
 
 export default function Root() {
 
@@ -26,14 +27,16 @@ export default function Root() {
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <div class="h-[100dvh]">
-              <Navigation />
-              <div class="h-[calc(100%-4rem)]">
-                <Routes>
-                  <FileRoutes />
-                </Routes>
+            <AppContextProvider>
+              <div class="h-[100dvh]">
+                <Navigation />
+                <div class="h-[calc(100%-4rem)]">
+                  <Routes>
+                    <FileRoutes />
+                  </Routes>
+                </div>
               </div>
-            </div>
+            </AppContextProvider>
           </ErrorBoundary>
         </Suspense>
         <Scripts />
