@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { CollectionReference, DocumentData, QuerySnapshot, Unsubscribe, collection, deleteDoc, doc, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
+import { CollectionReference, DocumentData, QuerySnapshot, Unsubscribe, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
 import { FIREBASE_CONFIG } from "./constants";
 import { Link, User } from "./types";
 import { AES, enc } from 'crypto-js'
@@ -76,8 +76,18 @@ export async function saveLink(user: User, link: string) {
   return data
 }
 
+export async function getlinks(user: User) {
+  const links = await getDocs(collection(db, paths.links(user.id)))
+  return links.docs.map(doc => {
+    const data = doc.data()
+    return {
+      ...data,
+      url: decrypt(data.url, user.decryptionKey),
+    } as Link
+  })
+}
 
-export async function getLinks(user: User, callback: (links: Link[]) => void) {  
+export async function getLiveLinks(user: User, callback: (links: Link[]) => void) {  
   return subscribe(collection(db, paths.links(user.id)), (querySnapshot) => {
     const links = querySnapshot.docs.map(doc => {
       const data = doc.data()

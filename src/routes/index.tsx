@@ -2,7 +2,7 @@ import { createEffect, createSignal } from "solid-js";
 import clsx from 'clsx';
 
 import { useAppContext } from "~/lib/appContext";
-import { deleteLink, getLinks, saveLink } from "~/lib/firebase";
+import { deleteLink, getLiveLinks, getlinks, saveLink } from "~/lib/firebase";
 import { Link } from "~/lib/types";
 import { DatedList } from "~/lib/components";
 
@@ -13,7 +13,7 @@ export default function App() {
 
   createEffect(() => {
     const currentUser = user();
-    getLinks(currentUser, setLinks)
+    getLiveLinks(currentUser, setLinks)
     
   });
 
