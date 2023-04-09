@@ -1,6 +1,5 @@
-import { doc, getDoc, setDoc } from "firebase/firestore"
 import { APIEvent, json } from "solid-start"
-import db, { schemas } from "~/lib/firebase"
+import { saveLink } from "~/lib/firebase"
 
 type Body = {
   url: string
@@ -9,14 +8,8 @@ type Body = {
 
 export async function POST(props: APIEvent) {
   const body = await props.request.json() as Body
-  const { id } = body.user
 
-  const docSnap = await getDoc(doc(db, schemas.stache.name, id));
-  if (!docSnap.exists()) {
-    await setDoc(doc(db, schemas.stache.name, id), {
-      // id: id,
-    });
-  }
+  saveLink(body.user, body.url)
 
   if (!body?.url) {
     return json({
