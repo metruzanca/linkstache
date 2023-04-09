@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { Unsubscribe, collection, deleteDoc, doc, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
+import { CollectionReference, DocumentData, QuerySnapshot, Unsubscribe, collection, deleteDoc, doc, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
 import { FIREBASE_CONFIG } from "./constants";
 import { Link, User } from "./types";
 import { AES, enc } from 'crypto-js'
@@ -21,6 +21,22 @@ const paths = {
   stache: (uid: string) => [STACHE, uid].join('/'),
   links: (uid: string) => [STACHE, uid, LINKS].join('/'),
   link: (uid: string, link: string) => [STACHE, uid, LINKS, link].join('/'),
+}
+
+const subscriptions: Record<string, Unsubscribe> = {}
+/**
+ * Like onSnapshot but handles unsubscribing for you.
+ * 
+ * Call this function multipletimes safely.
+ */
+function subscribe(
+  query: CollectionReference<DocumentData>,
+  onNext: (snapshot: QuerySnapshot<DocumentData>) => void,
+) {
+  const path = query.path
+  subscriptions[path]?.()
+  subscriptions[path] = onSnapshot(query, onNext)
+  return subscriptions[path]
 }
 
 // Docs: https://firebase.google.com/docs/firestore
@@ -60,11 +76,9 @@ export async function saveLink(user: User, link: string) {
   return data
 }
 
-let getLinksLiveSubscription: Unsubscribe|null = null;
-export async function getLinks(user: User, callback: (links: Link[]) => void) {
-  getLinksLiveSubscription?.();
-  const linksDoc = collection(db, paths.links(user.id))
-  getLinksLiveSubscription = onSnapshot(linksDoc, (querySnapshot) => {
+
+export async function getLinks(user: User, callback: (links: Link[]) => void) {  
+  return subscribe(collection(db, paths.links(user.id)), (querySnapshot) => {
     const links = querySnapshot.docs.map(doc => {
       const data = doc.data()
       return {
@@ -73,7 +87,7 @@ export async function getLinks(user: User, callback: (links: Link[]) => void) {
       } as Link
     })
     callback(links)
-  });
+  })
 }
 
 export async function deleteLink(user: User, linkId: string) {
