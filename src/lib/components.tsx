@@ -1,9 +1,11 @@
-import { Accessor, Component, ParentComponent, Show, createSignal } from "solid-js";
+import { Accessor, Component, For, JSXElement, ParentComponent, Show } from "solid-js";
+import clsx from "clsx";
+
 import { useAppContext } from "./appContext";
 import { addDebugLinks } from "./firebase";
-import clsx from "clsx";
 import { A, useLocation } from "solid-start";
 import { makeBookmarklet } from "./bookmarklet";
+import { groupByDate } from "./util";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -122,3 +124,23 @@ export const Debug: Component<{ data: any }> = (props) => (
     </pre>
   </Show>
 )
+
+type DatedListProps = {
+  each: any[]
+  children: (item: any, index: Accessor<number>) => JSXElement
+  header: (date: Date, index: Accessor<number>) => JSXElement
+}
+
+/** Adds headings every change of date */
+export const DatedList: Component<DatedListProps> = (props) => {
+  return (
+    <>
+      {Object.entries(groupByDate(props.each)).map(([date, links], idx) => (
+        <>
+          {props.header(new Date(date), () => idx)}
+          <For each={links} children={props.children} />
+        </>
+      ))}
+    </>
+  )
+}

@@ -1,31 +1,11 @@
-import { Accessor, Component, For, JSXElement, createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
+import clsx from 'clsx';
+
 import { useAppContext } from "~/lib/appContext";
 import { deleteLink, getLinks, saveLink } from "~/lib/firebase";
 import { Link } from "~/lib/types";
-import clsx from 'clsx';
-import { groupByDate } from "~/lib/util";
-import { Navigation } from "~/lib/components";
+import { DatedList } from "~/lib/components";
 
-
-type DatedListProps = {
-  each: any[]
-  children: (item: any, index: Accessor<number>) => JSXElement
-  header: (date: Date, index: Accessor<number>) => JSXElement
-}
-
-/** Adds headings every change of date */
-const DatedList: Component<DatedListProps> = (props) => {
-  return (
-    <>
-      {Object.entries(groupByDate(props.each)).map(([date, links], idx) => (
-        <>
-          {props.header(new Date(date), () => idx)}
-          <For each={links} children={props.children}/>
-        </>
-      ))}
-    </>
-  )
-}
 
 export default function App() {
   const {user} = useAppContext()
@@ -45,7 +25,6 @@ export default function App() {
       input.value = '';
     }
   }
-
 
   return (
     <div>
@@ -83,13 +62,9 @@ export default function App() {
 
       </main>
 
-      <div>
+      <div class="fixed bottom-0 w-full border-t border-gray-200 bg-white">
         <form
-          class={`
-            flex items-center justify-between p-4
-            border-t border-gray-200 bg-white
-            fixed bottom-0 w-full 
-          `}
+          class="flex items-center justify-between p-4"
           onsubmit={e => e.preventDefault()}
         >
           <input
