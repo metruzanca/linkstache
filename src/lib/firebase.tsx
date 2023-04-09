@@ -47,7 +47,6 @@ export async function saveLink(user: User, link: string) {
   }
   
   const encryptedLink = encrypt(link, user.decryptionKey)
-  console.log(encryptedLink);
   
   const data: Link = {
     url: encryptedLink,

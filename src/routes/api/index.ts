@@ -8,7 +8,8 @@ type Body = {
 
 export async function POST(props: APIEvent) {
   const body = await props.request.json() as Body
-
+  console.log(body.user);
+  
   saveLink(body.user, body.url)
 
   if (!body?.url) {

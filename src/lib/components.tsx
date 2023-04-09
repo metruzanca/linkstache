@@ -3,6 +3,7 @@ import { useAppContext } from "./appContext";
 import { addDebugLinks } from "./firebase";
 import clsx from "clsx";
 import { A, useLocation } from "solid-start";
+import { makeBookmarklet } from "./bookmarklet";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -104,8 +105,11 @@ export const Navigation: Component<{}> = (props) => {
 
         <hr />
         
-        <h3 class="text-xl">Debug Utils</h3>
-        <button onclick={() => addDebugLinks(user())}>Add links</button>
+        <h3 class="text-xl">Dev Utils</h3>
+        <div class="flex flex-col">
+          <button onclick={() => addDebugLinks(user())}>Add links</button>
+          <a href={makeBookmarklet()}>Bookmarklet</a>
+        </div>
       </Sidebar>
     </nav>
   )

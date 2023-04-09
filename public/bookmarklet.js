@@ -47,12 +47,11 @@ const globalStyles = createElement('style', {
 const { baseUrl, id, decryptionKey, DEV } = window.stache
 
 async function addLink(url) {
-  // NOTE: Do not send the decryption key to the server.
   const data = await fetch(`${baseUrl}/api/`, {
     method: 'POST',
     body: JSON.stringify({
       url,
-      user: { id },
+      user: { id, decryptionKey },
     }),
   });
 
