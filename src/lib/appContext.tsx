@@ -68,7 +68,8 @@ const makeAppContext = () => {
 
 type AppContext = ReturnType<typeof makeAppContext>
 
-const initialContext = makeAppContext();
+
+const initialContext = window && makeAppContext();
 const appContext = createContext<AppContext>(initialContext);
 
 export const AppContextProvider: ParentComponent = (props) => (
