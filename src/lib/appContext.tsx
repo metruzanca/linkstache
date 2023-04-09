@@ -69,7 +69,10 @@ const makeAppContext = () => {
 type AppContext = ReturnType<typeof makeAppContext>
 
 
-const initialContext = window && makeAppContext();
+// For some damn reason, SolidStart w/ ssr: false doesn't work.
+// Pages other than / get SSR'd.
+//@ts-ignore 
+const initialContext: AppContext = typeof window !== 'undefined' && makeAppContext();
 const appContext = createContext<AppContext>(initialContext);
 
 export const AppContextProvider: ParentComponent = (props) => (
