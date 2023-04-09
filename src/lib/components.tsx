@@ -30,13 +30,17 @@ const Hamburger: Component<HamburgerProps> = (props) => {
   )
 }
 
-const Sidebar: ParentComponent<{ open: Accessor<boolean> }> = (props) => (
+type SidebarProps = { open: Accessor<boolean>; close: () => void }
+const Sidebar: ParentComponent<SidebarProps> = (props) => (
   <div>
-    <div class={clsx(
-      "fixed top-16 bg-black pointer-events-none w-full h-full",
-      props.open() ? "opacity-30" : "opacity-0",
-      "ease-in-out duration-300"
-    )} />
+    <div
+      class={clsx(
+        "fixed top-16 bg-black w-full h-full",
+        props.open() ? "opacity-30" : "opacity-0 pointer-events-none",
+        "ease-in-out duration-300"
+      )}
+      onclick={props.close}
+    />
     <aside class={clsx(
       `fixed top-16 right-0 w-64 h-full bg-white border-l border-gray-200`,
       props.open() ? "translate-x-0 " : "translate-x-full",
@@ -90,7 +94,7 @@ export const Navigation: Component<{}> = (props) => {
         </div>
       </div>
 
-      <Sidebar open={menuOpen}>
+      <Sidebar open={menuOpen} close={() => setMenuOpen(false)}>
         <h3 class="text-xl">Navigation</h3>
         <div class="flex justify-center flex-col">
           <AA href="/" text="My Links" />
