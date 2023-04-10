@@ -1,7 +1,7 @@
 {
   "name": "link-stash",
   "scripts": {
-    "dev": "vercel env pull && solid-start dev",
+    "dev": "solid-start dev",
     "build": "solid-start build",
     "start": "solid-start start",
     "test": "vitest"
