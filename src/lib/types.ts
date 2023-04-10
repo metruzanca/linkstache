@@ -1,10 +1,20 @@
-export type User = {
-  id: string;
-  decryptionKey: string;
+export type Stache = {
+  encryptionKey: string;
 }
-export type Link = {
+
+type BaseLink = {
   id: string
-  url: string;
   createdAt: number;
   title?: string;
+  url: string
 }
+
+type EncryptedLink = BaseLink & {
+  encrypted: true
+}
+
+type PlainTextLink = BaseLink & {
+  encrypted: false
+}
+
+export type Link = EncryptedLink | PlainTextLink

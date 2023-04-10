@@ -14,6 +14,9 @@ import {
 import "./root.css";
 import { Navigation } from "./lib/components";
 import { AppContextProvider } from "./lib/appContext";
+import FIREBASE_CONFIG from "../firebase.json";
+import { Firebase } from "./lib/firebase";
+Firebase.init(FIREBASE_CONFIG);
 
 export default function Root() {
 

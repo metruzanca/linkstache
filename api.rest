@@ -1,13 +1,23 @@
 @baseUrl = http://localhost:3000/api
 
-POST {{baseUrl}}/
+@userId = "da41420b-09a5-4895-877b-b9ff2493bbdd"
+
+# @name GetUserById
+# This response includes all their links and settings
+GET {{baseUrl}}/u/{{userId}}/
+###
+
+# @name UpsertLink
+POST {{baseUrl}}/u/{{userId}}/links/
 Content-Type: application/json
 
 {
-  "action": "list",
-  "user": {
-    "id": "",
-    "decryptionKey": ""
-  }
+  "id": "",
+  "url": "",
+  "createdAt": ""
 }
+###
+
+# @name DeleteLink
+DELETE {{baseUrl}}/u/{{userId}}/links/{{linkId}}/
 ###

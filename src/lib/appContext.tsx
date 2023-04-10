@@ -1,55 +1,47 @@
 import { createSignal, createEffect, createContext, ParentComponent, useContext } from "solid-js";
 import { v4 } from "uuid";
 import { LOCAL_STORAGE } from "./constants";
-import { User } from "./types";
+import { Stache } from "./types";
 
-
-
-const makeUser = (user: Partial<User> = {}): User => ({
-  id: v4(),
-  decryptionKey: v4(),
-  ...user,
+const makeStache = (): Stache => ({
+  encryptionKey: v4(),
 })
 
 const makeAppContext = () => {
   // Grab the user from localStorage. If it doesn't exist, create a new one.
-  const raw = localStorage.getItem(LOCAL_STORAGE.USER);
-  let data = makeUser()
+  const raw = localStorage.getItem(LOCAL_STORAGE.STACHE);
+  let data = makeStache()
   if (raw) {
-    const parsed = JSON.parse(raw) as User;
+    const parsed = JSON.parse(raw) as Stache;
     data = parsed
   }
-  const [user, setUser] = createSignal<User>(data);
+  const [stache, setStache] = createSignal<Stache>(data);
 
   // Setup Reactive Persistance
   createEffect(() => {    
-    const value = user();
+    const value = stache();
     if (value) {
-      localStorage.setItem(LOCAL_STORAGE.USER, JSON.stringify(value));
+      localStorage.setItem(LOCAL_STORAGE.STACHE, JSON.stringify(value));
     }
   });
 
   // Debugging
   if (import.meta.env.DEV) {
     createEffect(() => {
-      console.log(user())
+      console.log(stache())
     })
   }
 
   // Actions
-  function save(user: User) {
-    localStorage.setItem(LOCAL_STORAGE.BACKUP, JSON.stringify(user));
-    setUser(user)
-  }
-
-  function sync(id: string, decryptionKey: string) {
-    const currentUser = user()
-    if (id !== currentUser.id) {
-      // TODO ask user which one they want to use.
-      console.warn('Already logged in as another user. Making backup')
-    }
-    const newUser = makeUser({ id, decryptionKey })
-    save(newUser)
+  function sync(decryptionKey: string) {
+  //   const currentUser = stache()
+  //   if (id !== currentUser.id) {
+  //     // TODO ask user which one they want to use.
+  //     console.warn('Already logged in as another user. Making backup')
+  //   }
+  //   const newUser = makeStache({ id, encryptionKey: decryptionKey })
+  //   localStorage.setItem(LOCAL_STORAGE.BACKUP, JSON.stringify(stache));
+  //   setStache(stache)
   }
 
   
@@ -58,7 +50,7 @@ const makeAppContext = () => {
 
   return {
     // Signals
-    user,
+    user: stache,
     menuOpen, setMenuOpen,
 
     // Actions

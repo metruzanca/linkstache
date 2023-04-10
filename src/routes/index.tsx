@@ -2,9 +2,10 @@ import { createEffect, createSignal } from "solid-js";
 import clsx from 'clsx';
 
 import { useAppContext } from "~/lib/appContext";
-import { deleteLink, getLiveLinks, getlinks, saveLink } from "~/lib/firebase";
 import { Link } from "~/lib/types";
 import { DatedList } from "~/lib/components";
+import { useNavigate } from "solid-start";
+import { Firebase } from "~/lib/firebase";
 
 
 export default function App() {
@@ -13,17 +14,21 @@ export default function App() {
 
   createEffect(() => {
     const currentUser = user();
-    getLiveLinks(currentUser, setLinks)
-    
+    // getLiveLinks(currentUser, setLinks)    
+    const navigate = useNavigate();
+    const fire = Firebase.instance();
+    if (!fire.isAuth) {
+      navigate('/auth')
+    }
   });
 
   let input: HTMLInputElement|undefined;
 
   async function handleAddLink() {
-    if (input?.value && input.value.length > 0) {
-      await saveLink(user(), input.value);
-      input.value = '';
-    }
+    // if (input?.value && input.value.length > 0) {
+    //   await saveLink(user(), input.value);
+    //   input.value = '';
+    // }
   }
 
   return (
@@ -50,7 +55,7 @@ export default function App() {
                   class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
                   textContent="Delete"
                   onClick={async () => {
-                    await deleteLink(user(), link.id);
+                    // await deleteLink(user(), link.id);
                   }}
                 />
               </div>

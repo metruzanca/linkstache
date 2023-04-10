@@ -1,11 +1,11 @@
-import { Accessor, Component, For, JSXElement, ParentComponent, Show } from "solid-js";
+import { Accessor, Component, createEffect, For, JSXElement, ParentComponent, Show } from "solid-js";
 import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
-import { addDebugLinks } from "./firebase";
 import { A, useLocation } from "solid-start";
 import { makeBookmarklet } from "./bookmarklet";
 import { groupByDate } from "./util";
+import { useRouteParams } from "solid-start/islands/server-router";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -73,8 +73,14 @@ const AA: Component<{ href: string; text: string }> = (props) => {
   )
 }
 
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export const Navigation: Component<{}> = (props) => {
   const { user, menuOpen, setMenuOpen } = useAppContext();
+  const location = useLocation();
+  const page = () => location.pathname.slice(1);
 
   return (
     <nav>
@@ -83,13 +89,16 @@ export const Navigation: Component<{}> = (props) => {
             flex justify-between fixed top-0 w-full  p-4
             border-b border-gray-200 bg-white
           `}>
-          <h1 class="text-2xl font-bold">
-            <A
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              textContent={"LinkStache"}
-            />
-          </h1>
+          <span>
+            <h1 class="text-2xl font-bold inline">
+              <A
+                href="/"
+                onClick={() => setMenuOpen(false)}
+                textContent="LinkStache"
+              />
+            </h1>
+            {page().length > 0 && <span> - {capitalize(page())}</span>}
+          </span>
           <Hamburger
             onClick={setMenuOpen}
             toggled={menuOpen}
@@ -109,7 +118,7 @@ export const Navigation: Component<{}> = (props) => {
         
         <h3 class="text-xl">Dev Utils</h3>
         <div class="flex flex-col">
-          <button onclick={() => addDebugLinks(user())}>Add links</button>
+          {/* <button onclick={() => addDebugLinks(user())}>Add links</button> */}
           <a href={makeBookmarklet()}>Bookmarklet</a>
         </div>
       </Sidebar>

@@ -7,7 +7,7 @@ import { useAppContext } from "./appContext"
 export const makeBookmarklet = () => {
   const baseUrl = location.origin
   const { user } = useAppContext()
-  const { id, decryptionKey } = user()
+  const { id, encryptionKey: decryptionKey } = user()
   return `javascript:(async function(){
     window.stache = {
       baseUrl: '${baseUrl}',
