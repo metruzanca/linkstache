@@ -12,14 +12,14 @@ const authSchema = z.object({
 })
 
 const Auth: Component<{}> = () => {
+  const { setAuth } = useAppContext()
+  const navigate = useNavigate()        
   const [isLogin, setIsLogin] = createSignal(true);
   let passwordInput: HTMLInputElement|undefined;
   let emailInput: HTMLInputElement|undefined;
 
   const redirect = () => {
-    const { setAuth } = useAppContext()
-    setAuth(true)
-    const navigate = useNavigate()        
+    setAuth('logged-in')
     navigate('/')
   }
 

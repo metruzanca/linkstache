@@ -80,6 +80,10 @@ export class Firebase {
     })
   }
 
+  async logout() {
+    return this.auth.signOut()
+  }
+
   subscribeToLinks() {
 
   }

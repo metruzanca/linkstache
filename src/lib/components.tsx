@@ -1,10 +1,9 @@
-import { Accessor, Component, createEffect, createSignal, For, JSXElement, ParentComponent, Show } from "solid-js";
+import { Accessor, Component, createEffect, For, JSXElement, ParentComponent, Show } from "solid-js";
 import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
-import { A, useLocation } from "solid-start";
+import { A, useLocation, useNavigate } from "solid-start";
 import { groupByDate } from "./util";
-import { useRouteParams } from "solid-start/islands/server-router";
 import { Firebase } from "./firebase";
 
 type HamburgerProps = {
@@ -78,9 +77,17 @@ function capitalize(str: string) {
 }
 
 export const Navigation: Component<{}> = (props) => {
-  const { menuOpen, toggleMenu, auth } = useAppContext();
+  const { menuOpen, toggleMenu, auth, setAuth } = useAppContext();
   const location = useLocation();
   const page = () => location.pathname.slice(1);
+  const navigate = useNavigate()
+
+  const handleLogOut = async () => {
+    await Firebase.instance().logout();
+    setAuth('logged-out')
+    toggleMenu(false)
+    navigate('/auth')
+  }
 
   return (
     <nav>
@@ -117,11 +124,11 @@ export const Navigation: Component<{}> = (props) => {
             </div>
           </div>
 
-          {auth() && (
+          {auth() === 'logged-in' && (
             <div class="p-4 text-center border-t">
               <button
                 class="btn-warn"
-                onClick={() => alert('WIP')}
+                onClick={handleLogOut}
                 textContent="Logout"
               />
             </div>
@@ -157,5 +164,37 @@ export const DatedList: Component<DatedListProps> = (props) => {
         </>
       ))}
     </>
+  )
+}
+
+export const Loading: Component = () => (
+  <div class="flex justify-center items-center h-full">
+    <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+  </div>
+)
+
+export const SplashScreen: ParentComponent = (props) => {
+  const { auth, setAuth } = useAppContext();
+  const navigate = useNavigate();
+
+  createEffect(async () => {
+    const fire = Firebase.instance();
+    fire.authenticate()
+    .then(() => {
+      setAuth('logged-in')
+      if (location.pathname == '/auth') {
+        navigate('/')
+      }
+    })
+    .catch(() => {
+      setAuth('logged-out')
+      navigate('/auth')
+    })
+  });
+
+  return (
+    <Show when={auth() !== 'loading'} keyed fallback={<Loading/>}>
+      {props.children}
+    </Show>
   )
 }

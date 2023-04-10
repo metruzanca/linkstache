@@ -10,20 +10,6 @@ import { Firebase } from "~/lib/firebase";
 
 export default function App() {
   const [links, setLinks] = createSignal<Link[]>([]);
-
-  createEffect(async () => {
-    const { setAuth } = useAppContext();
-    const navigate = useNavigate();
-    const fire = Firebase.instance();
-    fire.authenticate()
-    .then(() => {
-      setAuth(true)
-    })
-    .catch(() => {
-      navigate('/auth')
-    })
-  });
-
   let input: HTMLInputElement|undefined;
 
   async function handleAddLink() {

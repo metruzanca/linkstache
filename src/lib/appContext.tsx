@@ -7,6 +7,8 @@ const makeStache = (): Stache => ({
   encryptionKey: v4(),
 })
 
+type AuthState = 'loading' | 'logged-in' | 'logged-out'
+
 const makeAppContext = () => {
   // Grab the user from localStorage. If it doesn't exist, create a new one.
   const raw = localStorage.getItem(LOCAL_STORAGE.STACHE);
@@ -36,7 +38,9 @@ const makeAppContext = () => {
   const toggleMenu = (next = !menuOpen()) => setMenuOpen(next);
 
   // Used to determine if the user is logged in the nav components
-  const [auth, setAuth] = createSignal(false);
+  const [auth, _setAuth] = createSignal<AuthState>('loading');
+  const setAuth = (state: AuthState) => _setAuth(state);
+
 
   return {
     // Signals

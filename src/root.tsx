@@ -12,7 +12,7 @@ import {
   Title,
 } from "solid-start";
 import "./root.css";
-import { Navigation } from "./lib/components";
+import { Navigation, SplashScreen } from "./lib/components";
 import { AppContextProvider } from "./lib/appContext";
 import FIREBASE_CONFIG from "../firebase.json";
 import { Firebase } from "./lib/firebase";
@@ -31,14 +31,16 @@ export default function Root() {
         <Suspense>
           <ErrorBoundary>
             <AppContextProvider>
-              <div class="h-[100dvh]">
-                <Navigation />
-                <div class="h-[calc(100%-4rem)]">
-                  <Routes>
-                    <FileRoutes />
-                  </Routes>
+              <SplashScreen>
+                <div class="h-[100dvh]">
+                  <Navigation />
+                  <div class="h-[calc(100%-4rem)]">
+                    <Routes>
+                      <FileRoutes />
+                    </Routes>
+                  </div>
                 </div>
-              </div>
+              </SplashScreen>
             </AppContextProvider>
           </ErrorBoundary>
         </Suspense>
