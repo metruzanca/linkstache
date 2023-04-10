@@ -1,9 +1,36 @@
 import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { CollectionReference, DocumentData, QuerySnapshot, Unsubscribe, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
-import { FIREBASE_CONFIG } from "./constants";
-import { Link, User } from "./types";
 import { AES, enc } from 'crypto-js'
 import { flags } from "~/flags";
+import { Link, User } from "~/lib/types";
+import FIREBASE_CONFIG from "~/../firebase.json";
+
+// Docs: https://firebase.google.com/docs/firestore
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+export async function signUp(email: string, password: string) {
+  return createUserWithEmailAndPassword(auth, email, password)
+  .then(userCred => {
+    const user = userCred.user;
+    return user;
+  })
+}
+
+export async function signIn(email: string, password: string) {
+  return signInWithEmailAndPassword(auth, email, password)
+  .then(userCred => {
+    const user = userCred.user;
+    return user;
+  })
+}
+
+export const signInEffect = () => new Promise ((res, rej) => {
+  onAuthStateChanged(auth, (user) => user ? res(user) : rej(user))
+});
+
 
 export const schemas = {
   stache: {
@@ -38,10 +65,6 @@ function subscribe(
   subscriptions[path] = onSnapshot(query, onNext)
   return subscriptions[path]
 }
-
-// Docs: https://firebase.google.com/docs/firestore
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getFirestore(app);
 
 function encrypt(text: string, key: string): string {
   if (flags.disableUrlEncryption) {
