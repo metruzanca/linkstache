@@ -2,30 +2,8 @@ import { Component, createEffect, createSignal } from "solid-js";
 import clsx from 'clsx';
 
 import { Link } from "~/lib/types";
-import { DatedList, LinkForm } from "~/lib/components";
+import { DatedList, LinkComponent, LinkForm } from "~/lib/components";
 import { Firebase } from "~/lib/firebase";
-
-const LinkComponent: Component<Link> = (props) => {
-  const handleDelete = async () => {
-    await Firebase.instance().deleteLink(props.id)
-  }
-
-  return (
-    <div class="flex items-center justify-between p-4">
-      <a
-        target="_blank"
-        href={props.url}
-        class="text-blue-600"
-        textContent={props.title || props.url}
-      />
-      <button
-        class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
-        textContent="Delete"
-        onClick={handleDelete}
-      />
-    </div>
-  )
-}
 
 export default function App() {
   const [links, setLinks] = createSignal<Link[]>([]);

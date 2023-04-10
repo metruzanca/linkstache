@@ -38,13 +38,11 @@ export class Firebase {
     this.db = getFirestore(app);
   }
 
-  public isAuth = false
-  public user?: User
+  public user!: User
 
   async authenticate() {
     return new Promise((resolve, reject) => {
       onAuthStateChanged(this.auth, (user) => {
-        this.isAuth = !!user
         if (user) {
           this.user = user
           resolve(user)
@@ -87,7 +85,6 @@ export class Firebase {
   }
 
   subscribeToLinks(callback: (links: Link[]) => void) {
-    if (!this.user) return;
     subscribe(collection(this.db, paths.links(this.user.uid)), (querySnapshot) => {
       const links = querySnapshot.docs.map(doc => doc.data() as Link)
       callback(links)
@@ -95,7 +92,6 @@ export class Firebase {
   }
 
   async upsertLink(link: string) {
-    if (!this.user) return;
     const encryptedLink = encodeURIComponent(link)
     const data: Link = {
       url: encryptedLink,
@@ -108,73 +104,11 @@ export class Firebase {
   }
 
   async deleteLink(linkId: string) {
-    if (!this.user) return;
     const linkDoc = doc(this.db, paths.link(this.user.uid, linkId))
     await deleteDoc(linkDoc);
   }
+
+  async updateLink(linkId: string) {
+    
+  }
 }
-
-// export async function saveLink(user: User, link: string) {
-//   if (!link.startsWith('http')) {
-//     link = `https://${link}`
-//   }
-  
-//   const encryptedLink = encrypt(link, user.decryptionKey)
-  
-//   const data: Link = {
-//     url: encryptedLink,
-//     createdAt: (new Date()).getTime(),
-//     id: encryptedLink,
-//   }
-
-//   const linkDoc = doc(db, paths.link(user.id, encryptedLink))
-//   await setDoc(linkDoc, data);
-
-//   return data
-// }
-
-// export async function getLiveLinks(user: User, callback: (links: Link[]) => void) {  
-//   return subscribe(collection(db, paths.links(user.id)), (querySnapshot) => {
-//     const links = querySnapshot.docs.map(doc => {
-//       const data = doc.data()
-//       return {
-//         ...data,
-//         url: decrypt(data.url, user.decryptionKey),
-//       } as Link
-//     })
-//     callback(links)
-//   })
-// }
-
-// export async function deleteLink(user: User, linkId: string) {
-//   const linkDoc = doc(db, paths.link(user.id, linkId))
-//   await deleteDoc(linkDoc);
-// }
-
-// export async function addDebugLinks(user: User) {
-//   const day = 1000 * 60 * 60 * 24
-//   const links = [
-//     {
-//       url: 'https://www.google.com',
-//       createdAt: (new Date()).getTime(),
-//     },
-//     {
-//       url: 'https://github.com',
-//       createdAt: (new Date()).getTime() - day,
-//     }
-//   ]
-  
-//   for (const link of links) {
-//     const encryptedLink = encrypt(link.url, user.decryptionKey)
-//     const data: Link = {
-//       ...link,
-//       url: encryptedLink,
-//       id: encryptedLink,
-//       //@ts-ignore
-//       debug: link.url,
-//     }
-//     const linkDoc = doc(db, paths.link(user.id, encryptedLink))
-//     await setDoc(linkDoc, data);
-
-//   }
-// }

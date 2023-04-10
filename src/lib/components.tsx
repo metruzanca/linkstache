@@ -6,6 +6,7 @@ import { A, useLocation, useNavigate } from "solid-start";
 import { groupByDate } from "./util";
 import { Firebase } from "./firebase";
 import { z } from "zod";
+import { Link } from "./types";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -216,9 +217,6 @@ export const linkSchema = z.string().regex(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA
 export const LinkForm: Component<{}> = (props) => {
   let input: HTMLInputElement|undefined;
   async function handleAddLink() {
-    // if (!input) return;
-    // const value = input.value.startsWith('http')
-    //   ? input.value : `https://${input.value}`;
     const result = linkSchema.safeParse(input?.value);
     if (!result.success) {
       console.log(result.error);
@@ -249,3 +247,27 @@ export const LinkForm: Component<{}> = (props) => {
       </div>
   )
 };
+
+export const LinkComponent: Component<Link> = (props) => {
+  const handleDelete = async () => {
+    await Firebase.instance().deleteLink(props.id)
+  }
+
+  const formatUrl = (url: string) => url.startsWith('http') ? url : `https://${url}`
+
+  return (
+    <div class="flex items-center justify-between p-4">
+      <a
+        target="_blank"
+        href={formatUrl(props.url)}
+        class="text-blue-600"
+        textContent={props.title || props.url}
+      />
+      <button
+        class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
+        textContent="Delete"
+        onClick={handleDelete}
+      />
+    </div>
+  )
+}
