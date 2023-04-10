@@ -1,7 +1,3 @@
-export type Stache = {
-  encryptionKey: string;
-}
-
 type BaseLink = {
   id: string
   createdAt: number;
@@ -14,7 +10,7 @@ type EncryptedLink = BaseLink & {
 }
 
 type PlainTextLink = BaseLink & {
-  encrypted: false
+  encrypted?: false
 }
 
 export type Link = EncryptedLink | PlainTextLink

@@ -1,7 +1,4 @@
-import { AES, enc } from "crypto-js"
 import { CollectionReference, DocumentData, onSnapshot, QuerySnapshot, Unsubscribe } from "firebase/firestore"
-import { flags } from "~/flags"
-import { Link } from "./types"
 
 type Groups = Record<string, { createdAt: number }[]>
 export const groupByDate = (links: { createdAt: number }[]): Groups => {
@@ -50,36 +47,6 @@ export function subscribe(
   subscriptions[path]?.()
   subscriptions[path] = onSnapshot(query, onNext)
   return subscriptions[path]
-}
-
-export function encrypt(text: string, key: string): string {
-  if (flags.disableUrlEncryption) {
-    return encodeURIComponent(text)
-  }
-  return encodeURIComponent(AES.encrypt(text, key).toString());
-}
-
-export function decrypt(ciphertext: string, key: string): string {
-  if (flags.disableUrlEncryption) {
-    return decodeURIComponent(ciphertext)
-  }
-  return AES.decrypt(decodeURIComponent(ciphertext), key).toString(enc.Utf8)
-}
-
-export function decryptLinks(links: Link[], key: string) {
-  return links.map(link => ({
-    ...link,
-    encrypted: false,
-    url: link.encrypted ? decrypt(link.url, key) : link.url,
-  }))
-}
-
-export function encryptLinks(links: Link[], key: string) {
-  return links.map(link => ({
-    ...link,
-    encrypted: true,
-    url: link.encrypted ? link.url : encrypt(link.url, key),
-  }))
 }
 
 type FormSubmit = Event & {

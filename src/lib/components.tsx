@@ -55,7 +55,7 @@ const Sidebar: ParentComponent<SidebarProps> = (props) => {
         "ease-in-out duration-300"
       )}>
         <Show
-          when={auth() === 'logged-in'}
+          when={auth().state === 'logged-in'}
           children={props.children}
           fallback={<div class="p-4">You are not logged in.</div>}
         />          
@@ -111,7 +111,7 @@ export const Navigation: Component<{}> = (props) => {
             <h1 class="text-2xl font-bold inline">
               <A
                 style={{
-                  "pointer-events": auth() == 'logged-in' ? 'all' : 'none',
+                  "pointer-events": auth().state == 'logged-in' ? 'all' : 'none',
                 }}
                 href="/"
                 onClick={() => toggleMenu(false)}
@@ -205,7 +205,7 @@ export const SplashScreen: ParentComponent = (props) => {
   });
 
   return (
-    <Show when={auth() !== 'loading'} keyed fallback={<Loading/>}>
+    <Show when={auth().state !== 'loading'} keyed fallback={<Loading/>}>
       {props.children}
     </Show>
   )

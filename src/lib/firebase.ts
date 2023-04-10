@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { collection, deleteDoc, doc, Firestore, getFirestore, setDoc } from "firebase/firestore";
 import { Link } from "./types";
-import { subscribe, decrypt, encrypt } from "./util";
+import { subscribe } from "./util";
 
 const USER = 'stache'
 const LINKS = 'links'
@@ -96,9 +96,8 @@ export class Firebase {
 
   async upsertLink(link: string) {
     if (!this.user) return;
-    const encryptedLink = encrypt(link, this.user.uid)
+    const encryptedLink = encodeURIComponent(link)
     const data: Link = {
-      encrypted: false,
       url: encryptedLink,
       createdAt: (new Date()).getTime(),
       id: encryptedLink,

@@ -1,50 +1,31 @@
-import { createSignal, createEffect, createContext, ParentComponent, useContext } from "solid-js";
-import { v4 } from "uuid";
-import { LOCAL_STORAGE } from "./constants";
-import { Stache } from "./types";
+import { createSignal, createContext, ParentComponent, useContext } from "solid-js";
 
-const makeStache = (): Stache => ({
-  encryptionKey: v4(),
-})
+type LoggedIn = {
+  state: 'logged-in'
+  isAnonymous?: boolean
+}
 
-type AuthState = 'loading' | 'logged-in' | 'logged-out'
+type LoggedOut = {
+  state: 'logged-out'
+}
 
-const makeAppContext = () => {
-  // Grab the user from localStorage. If it doesn't exist, create a new one.
-  const raw = localStorage.getItem(LOCAL_STORAGE.STACHE);
-  let data = makeStache()
-  if (raw) {
-    const parsed = JSON.parse(raw) as Stache;
-    data = parsed
-  }
-  const [stache, setStache] = createSignal<Stache>(data);
+type Loading = {
+  state: 'loading'
+}
 
-  // Setup Reactive Persistance
-  createEffect(() => {    
-    const value = stache();
-    if (value) {
-      localStorage.setItem(LOCAL_STORAGE.STACHE, JSON.stringify(value));
-    }
-  });
+type AuthState = LoggedIn | LoggedOut | Loading
 
-  // Debugging
-  if (import.meta.env.DEV) {
-    createEffect(() => {
-      console.log(stache())
-    })
-  }
-  
+const makeAppContext = () => {  
   const [menuOpen, setMenuOpen] = createSignal(false);
   const toggleMenu = (next = !menuOpen()) => setMenuOpen(next);
 
   // Used to determine if the user is logged in the nav components
-  const [auth, _setAuth] = createSignal<AuthState>('loading');
-  const setAuth = (state: AuthState) => _setAuth(state);
+  const [auth, _setAuth] = createSignal<AuthState>({ state: 'loading' });
+  const setAuth = (state: AuthState['state']) => _setAuth({ state });
 
 
   return {
     // Signals
-    stache,
     menuOpen, toggleMenu,
     auth, setAuth,
 

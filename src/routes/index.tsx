@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useAppContext } from "~/lib/appContext";
 import { Link } from "~/lib/types";
 import { DatedList, LinkForm } from "~/lib/components";
-import { decryptLinks } from "~/lib/util";
+import { decodeLinks } from "~/lib/util";
 import { Firebase } from "~/lib/firebase";
 
 const LinkComponent: Component<Link> = (props) => {
@@ -30,12 +30,14 @@ const LinkComponent: Component<Link> = (props) => {
 }
 
 export default function App() {
-  const { stache } = useAppContext();
   const [links, setLinks] = createSignal<Link[]>([]);
 
   createEffect(() => {
     Firebase.instance().subscribeToLinks(links => {
-      setLinks(decryptLinks(links, stache().encryptionKey));
+      setLinks(links.map(link => {
+        link.url = decodeURIComponent(link.url)
+        return link
+      }));
     })
   })
 
