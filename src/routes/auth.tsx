@@ -27,8 +27,8 @@ const Auth: Component<{}> = () => {
   // Like upsert... but for login/signup... 🙃
   const logUp = (email: string, password: string ) => {
     const authPromise = isLogin()
-    ? Firebase.instance().login(email, password)
-    : Firebase.instance().signUp(email, password);
+    ? Firebase.login(email, password)
+    : Firebase.signUp(email, password);
     authPromise
     .then(redirect)
     .catch((err: FirebaseError) => {
@@ -56,7 +56,7 @@ const Auth: Component<{}> = () => {
   })
 
   const handleAnon = async () => {
-    Firebase.instance().loginAnonymously()
+    Firebase.loginAnonymously()
     .then(redirect)
     .catch(console.error)
   }

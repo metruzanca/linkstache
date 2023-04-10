@@ -95,7 +95,7 @@ export const Navigation: Component<{}> = (props) => {
   const navigate = useNavigate()
 
   const handleLogOut = async () => {
-    await Firebase.instance().logout();
+    await Firebase.logout();
     setAuth('logged-out')
     toggleMenu(false)
     navigate('/auth')
@@ -191,7 +191,7 @@ export const SplashScreen: ParentComponent = (props) => {
   const navigate = useNavigate();
 
   onMount(async () => {
-    const fire = Firebase.instance();
+    const fire = Firebase;
     fire.authenticate()
     .then(() => {
       setAuth('logged-in')
@@ -222,7 +222,7 @@ export const LinkForm: Component<{}> = (props) => {
       console.log(result.error);
       return
     }
-    await Firebase.instance().upsertLink(result.data);
+    await Firebase.upsertLink(result.data);
     input!.value = '';
   }
 
@@ -250,7 +250,7 @@ export const LinkForm: Component<{}> = (props) => {
 
 export const LinkComponent: Component<Link> = (props) => {
   const handleDelete = async () => {
-    await Firebase.instance().deleteLink(props.id)
+    await Firebase.deleteLink(props.id)
   }
 
   const formatUrl = (url: string) => url.startsWith('http') ? url : `https://${url}`

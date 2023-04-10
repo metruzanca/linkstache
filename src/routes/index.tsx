@@ -9,7 +9,7 @@ export default function App() {
   const [links, setLinks] = createSignal<Link[]>([]);
 
   createEffect(() => {
-    Firebase.instance().subscribeToLinks(links => {
+    Firebase.subscribeToLinks(links => {
       setLinks(links.map(link => {
         link.url = decodeURIComponent(link.url)
         return link
