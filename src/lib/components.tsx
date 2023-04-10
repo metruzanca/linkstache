@@ -262,23 +262,26 @@ export const LinkComponent: Component<Link> = (props) => {
       <a
         target="_blank"
         href={formatUrl(props.url)}
-        onClick={() => Firebase.updateLink(props.id, {
-          readCount: (props.readCount || 0) + 1,
-        })}
+        onClick={() => {
+          if (props.readCount >= TOO_MANY_READS - 1) {
+            Firebase.deleteLink(props.id)
+          } else {
+            Firebase.updateLink(props.id, {
+              readCount: (props.readCount || 0) + 1,
+            })
+          }
+        }}
         class="text-blue-600"
         textContent={props.title || props.url}
       />
-      {props.readCount && (
+      {props.readCount > 0 && (
         <span
           class={clsx(
             "text-gray-500 text-sm",
-            props.readCount > TOO_MANY_READS && "text-red-500"
           )}
-          title={props.readCount > TOO_MANY_READS ? "You've read this link a lot!" : undefined}
-        >
-          opened: {props.readCount} {props.readCount > 1 ? 'times' : 'once'}
-        </span>
-      )}
+          textContent={`reads left: ${TOO_MANY_READS - props.readCount}`}
+        />
+        )}
       <button
         class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
         textContent="Delete"

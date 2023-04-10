@@ -87,6 +87,7 @@ export class Firebase {
       url: encryptedLink,
       createdAt: (new Date()).getTime(),
       id: encryptedLink,
+      readCount: 0,
     }
     const linkDoc = doc(Firebase.db, paths.link(Firebase.user.uid, encryptedLink))
     await setDoc(linkDoc, data);
