@@ -1,10 +1,8 @@
 import { Component, createEffect, createSignal } from "solid-js";
 import clsx from 'clsx';
 
-import { useAppContext } from "~/lib/appContext";
 import { Link } from "~/lib/types";
 import { DatedList, LinkForm } from "~/lib/components";
-import { decodeLinks } from "~/lib/util";
 import { Firebase } from "~/lib/firebase";
 
 const LinkComponent: Component<Link> = (props) => {

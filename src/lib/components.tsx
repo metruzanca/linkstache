@@ -1,4 +1,4 @@
-import { Accessor, Component, createEffect, For, JSXElement, onMount, ParentComponent, Show } from "solid-js";
+import { Accessor, Component, For, JSXElement, onMount, ParentComponent, Show } from "solid-js";
 import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
@@ -64,8 +64,8 @@ const Sidebar: ParentComponent<SidebarProps> = (props) => {
   )
 }
 
-const AA: Component<{ href: string; text: string }> = (props) => {
-  const { toggleMenu, auth } = useAppContext();
+const Anchor: Component<{ href: string; text: string }> = (props) => {
+  const { toggleMenu } = useAppContext();
 
   const location = useLocation();
   const active = (path: string) =>
@@ -132,9 +132,9 @@ export const Navigation: Component<{}> = (props) => {
           <div>
             <h3 class="text-xl text-center">Navigation</h3>
             <div class="flex justify-center flex-col">
-              <AA href="/" text="My Links" />
-              <AA href="/sync" text="Sync" />
-              <AA href="/settings" text="Settings" />  
+              <Anchor href="/" text="My Links" />
+              <Anchor href="/sync" text="Sync" />
+              <Anchor href="/settings" text="Settings" />  
             </div>
           </div>
 
