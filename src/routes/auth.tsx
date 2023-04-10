@@ -5,6 +5,7 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from 'solid-icons/ai'
 import { z } from "zod";
 import { useNavigate } from "solid-start";
 import { useAppContext } from "~/lib/appContext";
+import { FirebaseError } from "firebase/app";
 
 const authSchema = z.object({
   email: z.string().email(),
@@ -23,30 +24,41 @@ const Auth: Component<{}> = () => {
     navigate('/')
   }
 
-  const handleSubmit = submit(async () => {
-    const validated = authSchema.safeParse({
-      email: emailInput?.value,
-      password: passwordInput?.value,
-    })
-    if (!validated.success) {
-      console.log(validated.error);
-      return
-    }
-    const { email, password } = validated.data
-
+  // Like upsert... but for login/signup... 🙃
+  const logUp = (email: string, password: string ) => {
     const authPromise = isLogin()
     ? Firebase.instance().login(email, password)
     : Firebase.instance().signUp(email, password);
-
     authPromise
-    .catch(console.error)
     .then(redirect)
+    .catch((err: FirebaseError) => {
+      if (err.code === 'auth/user-not-found' && isLogin()) {
+        // Sign-up instead
+        setIsLogin(false)
+        logUp(email, password)
+      }
+    })
+  }
+
+
+  const handleSubmit = submit(async () => {    
+    const result = authSchema.safeParse({
+      email: emailInput?.value,
+      password: passwordInput?.value,
+    })
+    if (!result.success) {
+      console.log(result.error);
+      return
+    }
+    const { email, password } = result.data
+
+    logUp(email, password)
   })
 
   const handleAnon = async () => {
     Firebase.instance().loginAnonymously()
-    .catch(console.error)
     .then(redirect)
+    .catch(console.error)
   }
 
   const [passwordVisible, setPasswordVisible] = createSignal(false);
@@ -57,7 +69,7 @@ const Auth: Component<{}> = () => {
       <form class="flex flex-col" onSubmit={handleSubmit}>
         
         <label for="email">Email</label>
-        <input type="email" id="email" ref={passwordInput} />
+        <input type="email" id="email" ref={emailInput} />
         
         <label for="password">Password</label>
         <span class="relative">
@@ -65,7 +77,7 @@ const Auth: Component<{}> = () => {
             class="w-full"
             type={passwordVisible() ? 'text' : 'password'}
             id="password"
-            ref={emailInput}
+            ref={passwordInput}
           />
           <span
             onClick={() => setPasswordVisible(prev => !prev)}

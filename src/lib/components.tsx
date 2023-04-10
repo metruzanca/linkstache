@@ -1,10 +1,11 @@
-import { Accessor, Component, createEffect, For, JSXElement, ParentComponent, Show } from "solid-js";
+import { Accessor, Component, createEffect, For, JSXElement, onMount, ParentComponent, Show } from "solid-js";
 import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
 import { A, useLocation, useNavigate } from "solid-start";
 import { groupByDate } from "./util";
 import { Firebase } from "./firebase";
+import { z } from "zod";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -139,7 +140,7 @@ export const Navigation: Component<{}> = (props) => {
 
           <div class="p-4 text-center border-t">
             <button
-              class="btn-warn"
+              class="btn warn"
               onClick={handleLogOut}
               textContent="Logout"
             />
@@ -188,7 +189,7 @@ export const SplashScreen: ParentComponent = (props) => {
   const { auth, setAuth } = useAppContext();
   const navigate = useNavigate();
 
-  createEffect(async () => {
+  onMount(async () => {
     const fire = Firebase.instance();
     fire.authenticate()
     .then(() => {
@@ -209,3 +210,42 @@ export const SplashScreen: ParentComponent = (props) => {
     </Show>
   )
 }
+
+export const linkSchema = z.string().regex(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi)
+
+export const LinkForm: Component<{}> = (props) => {
+  let input: HTMLInputElement|undefined;
+  async function handleAddLink() {
+    // if (!input) return;
+    // const value = input.value.startsWith('http')
+    //   ? input.value : `https://${input.value}`;
+    const result = linkSchema.safeParse(input?.value);
+    if (!result.success) {
+      console.log(result.error);
+      return
+    }
+    await Firebase.instance().upsertLink(result.data);
+    input!.value = '';
+  }
+
+  return (
+    <div class="fixed bottom-0 w-full border-t border-gray-200 bg-white">
+        <form
+          class="flex items-center justify-between p-4"
+          onsubmit={e => e.preventDefault()}
+        >
+          <input
+            class="border border-gray-300 p-2 rounded-sm"
+            placeholder="https://zanca.dev"
+            ref={input}
+          />
+          <button
+            type="submit"
+            class="bg-green-400 active:bg-green-500 w-16 px-2 rounded-sm"
+            onClick={handleAddLink}
+            textContent="Add"
+          />
+        </form>
+      </div>
+  )
+};

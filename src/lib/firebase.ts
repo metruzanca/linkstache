@@ -4,7 +4,9 @@ import {
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   onAuthStateChanged, signInAnonymously,
 } from "firebase/auth";
-import { Firestore, getFirestore } from "firebase/firestore";
+import { collection, deleteDoc, doc, Firestore, getFirestore, setDoc } from "firebase/firestore";
+import { Link } from "./types";
+import { subscribe, decrypt, encrypt } from "./util";
 
 const USER = 'stache'
 const LINKS = 'links'
@@ -84,16 +86,32 @@ export class Firebase {
     return this.auth.signOut()
   }
 
-  subscribeToLinks() {
-
+  subscribeToLinks(callback: (links: Link[]) => void) {
+    if (!this.user) return;
+    subscribe(collection(this.db, paths.links(this.user.uid)), (querySnapshot) => {
+      const links = querySnapshot.docs.map(doc => doc.data() as Link)
+      callback(links)
+    })
   }
 
-  upsertLink() {
-
+  async upsertLink(link: string) {
+    if (!this.user) return;
+    const encryptedLink = encrypt(link, this.user.uid)
+    const data: Link = {
+      encrypted: false,
+      url: encryptedLink,
+      createdAt: (new Date()).getTime(),
+      id: encryptedLink,
+    }
+    const linkDoc = doc(this.db, paths.link(this.user.uid, encryptedLink))
+    await setDoc(linkDoc, data);
+    return data
   }
 
-  deleteLink() {
-
+  async deleteLink(linkId: string) {
+    if (!this.user) return;
+    const linkDoc = doc(this.db, paths.link(this.user.uid, linkId))
+    await deleteDoc(linkDoc);
   }
 }
 

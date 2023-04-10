@@ -19,16 +19,15 @@
     @apply max-w-3xl mx-auto px-4;
   }
 
-  .btn-1 {
+  .btn {
     @apply w-16 px-2 rounded-sm;
-    @apply bg-blue-500 active:bg-blue-600 text-white;
+    @apply bg-blue-400 active:bg-blue-500 text-white;
   }
-  .btn-2 {
-    @apply w-16 px-2 rounded-sm;
-    @apply bg-zinc-500 active:bg-zinc-600 text-white;
+  .btn.secondary {
+    @apply bg-green-400 active:bg-green-500;
   }
-  .btn-warn {
-    @apply w-16 px-2 rounded-sm;
-    @apply bg-red-500 active:bg-red-600 text-white;
+  .btn.warn {
+    @apply bg-red-400 active:bg-red-500;
   }
+
 }

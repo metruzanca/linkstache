@@ -1,23 +1,43 @@
-import { createEffect, createSignal } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import clsx from 'clsx';
 
 import { useAppContext } from "~/lib/appContext";
 import { Link } from "~/lib/types";
-import { DatedList } from "~/lib/components";
-import { useNavigate } from "solid-start";
+import { DatedList, LinkForm } from "~/lib/components";
+import { decryptLinks } from "~/lib/util";
 import { Firebase } from "~/lib/firebase";
 
+const LinkComponent: Component<Link> = (props) => {
+  const handleDelete = async () => {
+    await Firebase.instance().deleteLink(props.id)
+  }
+
+  return (
+    <div class="flex items-center justify-between p-4">
+      <a
+        target="_blank"
+        href={props.url}
+        class="text-blue-600"
+        textContent={props.title || props.url}
+      />
+      <button
+        class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
+        textContent="Delete"
+        onClick={handleDelete}
+      />
+    </div>
+  )
+}
 
 export default function App() {
+  const { stache } = useAppContext();
   const [links, setLinks] = createSignal<Link[]>([]);
-  let input: HTMLInputElement|undefined;
 
-  async function handleAddLink() {
-    // if (input?.value && input.value.length > 0) {
-    //   await saveLink(user(), input.value);
-    //   input.value = '';
-    // }
-  }
+  createEffect(() => {
+    Firebase.instance().subscribeToLinks(links => {
+      setLinks(decryptLinks(links, stache().encryptionKey));
+    })
+  })
 
   return (
     <div>
@@ -31,48 +51,12 @@ export default function App() {
                 textContent={d.toDateString()}
               />
             )}
-            children={(link) => (
-              <div class="flex items-center justify-between p-4">
-                <a
-                  target="_blank"
-                  href={link.url}
-                  class="text-blue-600"
-                  textContent={link.title || link.url}
-                />
-                <button
-                  class="bg-red-400 active:bg-red-500 w-16 px-2 rounded-sm"
-                  textContent="Delete"
-                  onClick={async () => {
-                    // await deleteLink(user(), link.id);
-                  }}
-                />
-              </div>
-            )}
+            children={LinkComponent}
           />
-
         </div>
-        
 
       </main>
-
-      <div class="fixed bottom-0 w-full border-t border-gray-200 bg-white">
-        <form
-          class="flex items-center justify-between p-4"
-          onsubmit={e => e.preventDefault()}
-        >
-          <input
-            class="border border-gray-300 p-2 rounded-sm"
-            placeholder="https://zanca.dev"
-            ref={input}
-          />
-          <button
-            type="submit"
-            class="bg-green-400 active:bg-green-500 w-16 px-2 rounded-sm"
-            onClick={handleAddLink}
-            textContent="Add"
-          />
-        </form>
-      </div>
+      <LinkForm/>
     </div>
   );
 }

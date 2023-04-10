@@ -69,6 +69,7 @@ export function decrypt(ciphertext: string, key: string): string {
 export function decryptLinks(links: Link[], key: string) {
   return links.map(link => ({
     ...link,
+    encrypted: false,
     url: link.encrypted ? decrypt(link.url, key) : link.url,
   }))
 }
@@ -76,6 +77,7 @@ export function decryptLinks(links: Link[], key: string) {
 export function encryptLinks(links: Link[], key: string) {
   return links.map(link => ({
     ...link,
+    encrypted: true,
     url: link.encrypted ? link.url : encrypt(link.url, key),
   }))
 }

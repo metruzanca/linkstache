@@ -1,4 +1,4 @@
-import { useParams, useLocation } from "solid-start";
+import { useParams, useLocation, Navigate } from "solid-start";
 import { useAppContext } from "~/lib/appContext";
 
 async function setClipboard(text: string) {
@@ -13,10 +13,15 @@ async function setClipboard(text: string) {
 }
 
 export default function Sync() {
-  const { stache: user, sync } = useAppContext()
+  const { stache } = useAppContext()
 
 
   let input: HTMLInputElement|undefined;
+
+  return (
+    <Navigate href='/'/>
+  )
+
   return (
     <main>
       <div>
@@ -28,24 +33,26 @@ export default function Sync() {
         <input type="text" class="border border-gray-300 p-2 rounded-sm" ref={input}/>
         <button
           onClick={() => {
-            if (!input) return;
-            const [id, key] = input.value.split("#");
-            sync(id, key);
+            if (!input?.value) return;
+            console.log(input.value);
           }}
+          class="btn secondary"
           textContent="Sync"
         />
-        {/* TODO if this user has links, ask if they're sure they want to sync. (delete current user) */}
+        {/* TODO if this user has links, ask if they want to merge or delete user (delete key) */}
       </form>
       <h3>Sync this device with another?</h3>
 
       <p>Copy this code to your other device</p>
       <div class="flex">
-        <pre class="text-sm overflow-hidden">
-          {user().id}#{user().encryptionKey}
-        </pre>
+        <div>
+          <pre class="text-sm overflow-hidden">
+            {stache().encryptionKey}
+          </pre>
+        </div>
         <button
-          onClick={() => setClipboard(`${user().id}#${user().encryptionKey}`)}
-          class="bg-green-400 active:bg-green-500 w-16 px-2 rounded-sm ml-2"
+          onClick={() => setClipboard(stache().encryptionKey)}
+          class="btn secondary"
           textContent="Copy"
         />
       </div>
