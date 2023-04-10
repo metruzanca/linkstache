@@ -1,11 +1,11 @@
-import { Accessor, Component, createEffect, For, JSXElement, ParentComponent, Show } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, For, JSXElement, ParentComponent, Show } from "solid-js";
 import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
 import { A, useLocation } from "solid-start";
-import { makeBookmarklet } from "./bookmarklet";
 import { groupByDate } from "./util";
 import { useRouteParams } from "solid-start/islands/server-router";
+import { Firebase } from "./firebase";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -38,14 +38,14 @@ const Sidebar: ParentComponent<SidebarProps> = (props) => (
   <div>
     <div
       class={clsx(
-        "fixed top-16 bg-black w-full h-full",
+        "fixed z-50 top-16 bg-black w-full h-full",
         props.open() ? "opacity-30" : "opacity-0 pointer-events-none",
         "ease-in-out duration-300"
       )}
       onclick={props.close}
     />
     <aside class={clsx(
-      `fixed top-16 right-0 w-64 h-full bg-white border-l border-gray-200`,
+      `fixed z-50 top-16 right-0 w-64 h-[calc(100dvh-4rem)] bg-white border-l border-gray-200`,
       props.open() ? "translate-x-0 " : "translate-x-full",
       "ease-in-out duration-300"
     )}>
@@ -55,7 +55,7 @@ const Sidebar: ParentComponent<SidebarProps> = (props) => (
 )
 
 const AA: Component<{ href: string; text: string }> = (props) => {
-  const { setMenuOpen } = useAppContext();
+  const { toggleMenu } = useAppContext();
 
   const location = useLocation();
   const active = (path: string) =>
@@ -66,7 +66,7 @@ const AA: Component<{ href: string; text: string }> = (props) => {
   return (
     <A
       href={props.href}
-      onClick={() => setMenuOpen(false)}
+      onClick={() => toggleMenu(false)}
       class={`border-b-2 ${active(props.href)} mx-1.5 sm:mx-6`}
       textContent={props.text}
     />
@@ -78,7 +78,7 @@ function capitalize(str: string) {
 }
 
 export const Navigation: Component<{}> = (props) => {
-  const { user, menuOpen, setMenuOpen } = useAppContext();
+  const { menuOpen, toggleMenu, auth } = useAppContext();
   const location = useLocation();
   const page = () => location.pathname.slice(1);
 
@@ -93,33 +93,39 @@ export const Navigation: Component<{}> = (props) => {
             <h1 class="text-2xl font-bold inline">
               <A
                 href="/"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => toggleMenu(false)}
                 textContent="LinkStache"
               />
             </h1>
             {page().length > 0 && <span> - {capitalize(page())}</span>}
           </span>
           <Hamburger
-            onClick={setMenuOpen}
+            onClick={toggleMenu}
             toggled={menuOpen}
           />
         </div>
       </div>
 
-      <Sidebar open={menuOpen} close={() => setMenuOpen(false)}>
-        <h3 class="text-xl">Navigation</h3>
-        <div class="flex justify-center flex-col">
-          <AA href="/" text="My Links" />
-          <AA href="/sync" text="Sync" />
-          <AA href="/settings" text="Settings" />  
-        </div>
+      <Sidebar open={menuOpen} close={() => toggleMenu(false)}>
+        <div class="flex flex-col justify-between h-full">
+          <div>
+            <h3 class="text-xl">Navigation</h3>
+            <div class="flex justify-center flex-col">
+              <AA href="/" text="My Links" />
+              <AA href="/sync" text="Sync" />
+              <AA href="/settings" text="Settings" />  
+            </div>
+          </div>
 
-        <hr />
-        
-        <h3 class="text-xl">Dev Utils</h3>
-        <div class="flex flex-col">
-          {/* <button onclick={() => addDebugLinks(user())}>Add links</button> */}
-          <a href={makeBookmarklet()}>Bookmarklet</a>
+          {auth() && (
+            <div class="p-4 text-center border-t">
+              <button
+                class="btn-warn"
+                onClick={() => alert('WIP')}
+                textContent="Logout"
+              />
+            </div>
+          )}
         </div>
       </Sidebar>
     </nav>

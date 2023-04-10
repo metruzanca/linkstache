@@ -9,17 +9,19 @@ import { Firebase } from "~/lib/firebase";
 
 
 export default function App() {
-  const {user} = useAppContext()
   const [links, setLinks] = createSignal<Link[]>([]);
 
-  createEffect(() => {
-    const currentUser = user();
-    // getLiveLinks(currentUser, setLinks)    
+  createEffect(async () => {
+    const { setAuth } = useAppContext();
     const navigate = useNavigate();
     const fire = Firebase.instance();
-    if (!fire.isAuth) {
+    fire.authenticate()
+    .then(() => {
+      setAuth(true)
+    })
+    .catch(() => {
       navigate('/auth')
-    }
+    })
   });
 
   let input: HTMLInputElement|undefined;

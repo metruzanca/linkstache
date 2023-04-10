@@ -6,19 +6,29 @@
   h1 {
     @apply text-2xl;
   }
-
   h2 {
     @apply text-xl;
   }
-
   h3 {
-    @apply text-lg font-bold mt-4;
+    @apply text-lg font-bold;
   }
-
   pre {
     @apply bg-gray-100 p-4;
   }
   main {
     @apply max-w-3xl mx-auto px-4;
+  }
+
+  .btn-1 {
+    @apply w-16 px-2 rounded-sm;
+    @apply bg-blue-500 active:bg-blue-600 text-white;
+  }
+  .btn-2 {
+    @apply w-16 px-2 rounded-sm;
+    @apply bg-zinc-500 active:bg-zinc-600 text-white;
+  }
+  .btn-warn {
+    @apply w-16 px-2 rounded-sm;
+    @apply bg-red-500 active:bg-red-600 text-white;
   }
 }

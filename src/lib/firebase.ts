@@ -34,28 +34,39 @@ export class Firebase {
     const app = initializeApp(config);
     this.auth = getAuth(app);
     this.db = getFirestore(app);
-    onAuthStateChanged(this.auth, (user) => {
-      this.isAuth = !!user
-      if (user) this.user = user
-    })
-    // TODO signInAnonymously
   }
 
   public isAuth = false
   public user?: User
 
+  async authenticate() {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(this.auth, (user) => {
+        this.isAuth = !!user
+        if (user) {
+          this.user = user
+          resolve(user)
+        } else {
+          reject(user)
+        }
+      })
+    })
+  }
+
   async login(email: string, password: string) {
     return signInWithEmailAndPassword(this.auth, email, password)
     .then(userCred => {
       const user = userCred.user;
+      this.user = user;
       return user;
     })
   }
 
-  async signup(email: string, password: string) {
+  async signUp(email: string, password: string) {
     return createUserWithEmailAndPassword(this.auth, email, password)
     .then(userCred => {
       const user = userCred.user;
+      this.user = user;
       return user;
     })
   }
@@ -64,6 +75,7 @@ export class Firebase {
     return signInAnonymously(this.auth)
     .then(userCred => {
       const user = userCred.user;
+      this.user = user;
       return user;
     })
   }

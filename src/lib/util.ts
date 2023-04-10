@@ -86,9 +86,9 @@ type FormSubmit = Event & {
   currentTarget: HTMLFormElement;
   target: Element;
 }
-export const submit = (onSubmit: (e: FormSubmit) => void) => {
-  return (e: FormSubmit) => {
+export const submit = (onSubmit: (e: FormSubmit) => Promise<void>) => {
+  return async (e: FormSubmit) => {
     e.preventDefault()
-    onSubmit(e)
+    await onSubmit(e)
   }
 }

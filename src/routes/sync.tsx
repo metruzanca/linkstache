@@ -13,7 +13,7 @@ async function setClipboard(text: string) {
 }
 
 export default function Sync() {
-  const { user, sync } = useAppContext()
+  const { stache: user, sync } = useAppContext()
 
 
   let input: HTMLInputElement|undefined;

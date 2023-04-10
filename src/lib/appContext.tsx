@@ -31,30 +31,20 @@ const makeAppContext = () => {
       console.log(stache())
     })
   }
-
-  // Actions
-  function sync(decryptionKey: string) {
-  //   const currentUser = stache()
-  //   if (id !== currentUser.id) {
-  //     // TODO ask user which one they want to use.
-  //     console.warn('Already logged in as another user. Making backup')
-  //   }
-  //   const newUser = makeStache({ id, encryptionKey: decryptionKey })
-  //   localStorage.setItem(LOCAL_STORAGE.BACKUP, JSON.stringify(stache));
-  //   setStache(stache)
-  }
-
   
   const [menuOpen, setMenuOpen] = createSignal(false);
+  const toggleMenu = (next = !menuOpen()) => setMenuOpen(next);
 
+  // Used to determine if the user is logged in the nav components
+  const [auth, setAuth] = createSignal(false);
 
   return {
     // Signals
-    user: stache,
-    menuOpen, setMenuOpen,
+    stache,
+    menuOpen, toggleMenu,
+    auth, setAuth,
 
     // Actions
-    sync,
   } as const
 }
 
