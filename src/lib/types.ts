@@ -3,6 +3,7 @@ type BaseLink = {
   createdAt: number;
   title?: string;
   url: string
+  readCount?: number
 }
 
 type EncryptedLink = BaseLink & {

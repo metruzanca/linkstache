@@ -4,7 +4,7 @@ import {
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   onAuthStateChanged, signInAnonymously,
 } from "firebase/auth";
-import { collection, deleteDoc, doc, Firestore, getFirestore, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, Firestore, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { Link } from "./types";
 import { subscribe } from "./util";
 
@@ -98,7 +98,8 @@ export class Firebase {
     await deleteDoc(linkDoc);
   }
 
-  static async updateLink(linkId: string) {
-    
+  static async updateLink(linkId: string, data: Partial<Link>) {
+    const linkDoc = doc(Firebase.db, paths.link(Firebase.user.uid, linkId))
+    await updateDoc(linkDoc, data);
   }
 }
