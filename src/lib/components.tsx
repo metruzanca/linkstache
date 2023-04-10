@@ -32,29 +32,39 @@ const Hamburger: Component<HamburgerProps> = (props) => {
   )
 }
 
-type SidebarProps = { open: Accessor<boolean>; close: () => void }
-const Sidebar: ParentComponent<SidebarProps> = (props) => (
-  <div>
-    <div
-      class={clsx(
-        "fixed z-50 top-16 bg-black w-full h-full",
-        props.open() ? "opacity-30" : "opacity-0 pointer-events-none",
+type SidebarProps = {
+  open: Accessor<boolean>;
+  close: () => void;
+}
+const Sidebar: ParentComponent<SidebarProps> = (props) => {
+  const { auth } = useAppContext()
+  return (
+    <div>
+      <div
+        class={clsx(
+          "fixed z-50 top-16 bg-black w-full h-full",
+          props.open() ? "opacity-30" : "opacity-0 pointer-events-none",
+          "ease-in-out duration-300"
+        )}
+        onclick={props.close}
+      />
+      <aside class={clsx(
+        `fixed z-50 top-16 right-0 w-64 h-[calc(100dvh-4rem)] bg-white border-l border-gray-200`,
+        props.open() ? "translate-x-0 " : "translate-x-full",
         "ease-in-out duration-300"
-      )}
-      onclick={props.close}
-    />
-    <aside class={clsx(
-      `fixed z-50 top-16 right-0 w-64 h-[calc(100dvh-4rem)] bg-white border-l border-gray-200`,
-      props.open() ? "translate-x-0 " : "translate-x-full",
-      "ease-in-out duration-300"
-    )}>
-      {props.children}
-    </aside>
-  </div>
-)
+      )}>
+        <Show
+          when={auth() === 'logged-in'}
+          children={props.children}
+          fallback={<div class="p-4">You are not logged in.</div>}
+        />          
+      </aside>
+    </div>
+  )
+}
 
 const AA: Component<{ href: string; text: string }> = (props) => {
-  const { toggleMenu } = useAppContext();
+  const { toggleMenu, auth } = useAppContext();
 
   const location = useLocation();
   const active = (path: string) =>
@@ -99,6 +109,9 @@ export const Navigation: Component<{}> = (props) => {
           <span>
             <h1 class="text-2xl font-bold inline">
               <A
+                style={{
+                  "pointer-events": auth() == 'logged-in' ? 'all' : 'none',
+                }}
                 href="/"
                 onClick={() => toggleMenu(false)}
                 textContent="LinkStache"
@@ -124,15 +137,13 @@ export const Navigation: Component<{}> = (props) => {
             </div>
           </div>
 
-          {auth() === 'logged-in' && (
-            <div class="p-4 text-center border-t">
-              <button
-                class="btn-warn"
-                onClick={handleLogOut}
-                textContent="Logout"
-              />
-            </div>
-          )}
+          <div class="p-4 text-center border-t">
+            <button
+              class="btn-warn"
+              onClick={handleLogOut}
+              textContent="Logout"
+            />
+          </div>
         </div>
       </Sidebar>
     </nav>
