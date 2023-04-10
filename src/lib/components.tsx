@@ -116,7 +116,7 @@ export const Navigation: Component<{}> = (props) => {
       <Sidebar open={menuOpen} close={() => toggleMenu(false)}>
         <div class="flex flex-col justify-between h-full">
           <div>
-            <h3 class="text-xl">Navigation</h3>
+            <h3 class="text-xl text-center">Navigation</h3>
             <div class="flex justify-center flex-col">
               <AA href="/" text="My Links" />
               <AA href="/sync" text="Sync" />
