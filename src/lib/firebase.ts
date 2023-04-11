@@ -2,11 +2,9 @@ import { FirebaseOptions, initializeApp } from "firebase/app";
 import {
   getAuth, Auth, User,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  onAuthStateChanged, signInAnonymously,
+  onAuthStateChanged, signInAnonymously, Unsubscribe,
 } from "firebase/auth";
-import { collection, deleteDoc, doc, Firestore, getFirestore, setDoc, updateDoc } from "firebase/firestore";
-import { Link } from "./types";
-import { subscribe } from "./util";
+import { collection, CollectionReference, deleteDoc, doc, DocumentData, Firestore, getFirestore, onSnapshot, QuerySnapshot, setDoc, updateDoc } from "firebase/firestore";
 
 const USER = 'stache'
 const LINKS = 'links'
@@ -15,6 +13,22 @@ const paths: Record<string, (...args:string[]) => string> = {
   user: (uid) => [USER, uid].join('/'),
   links: (uid) => [USER, uid, LINKS].join('/'),
   link: (uid, link) => [USER, uid, LINKS, link].join('/'),
+}
+
+const subscriptions: Record<string, Unsubscribe> = {}
+/**
+ * Like onSnapshot but handles unsubscribing for you.
+ * 
+ * Call this function multiple times safely.
+ */
+export function subscribe(
+  query: CollectionReference<DocumentData>,
+  onNext: (snapshot: QuerySnapshot<DocumentData>) => void,
+) {
+  const path = query.path
+  subscriptions[path]?.()
+  subscriptions[path] = onSnapshot(query, onNext)
+  return subscriptions[path]
 }
 
 // Docs: https://firebase.google.com/docs/firestore
@@ -104,3 +118,21 @@ export class Firebase {
     await updateDoc(linkDoc, data);
   }
 }
+
+type BaseLink = {
+  id: string
+  createdAt: number;
+  title?: string;
+  url: string
+  readCount: number
+}
+
+type EncryptedLink = BaseLink & {
+  encrypted: true
+}
+
+type PlainTextLink = BaseLink & {
+  encrypted?: false
+}
+
+export type Link = EncryptedLink | PlainTextLink

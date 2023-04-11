@@ -1,6 +1,5 @@
 import { Component, createSignal } from "solid-js";
 import { Firebase } from "~/lib/firebase";
-import { submit } from "~/lib/util";
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'solid-icons/ai'
 import { z } from "zod";
 import { useNavigate } from "solid-start";
@@ -12,12 +11,35 @@ const authSchema = z.object({
   password: z.string(),
 })
 
+const InputPassword: Component<{ ref?: HTMLInputElement, id?: string }> = (props) => {
+  const [passwordVisible, setPasswordVisible] = createSignal(false);
+  return (
+    <span class="relative">
+      <input
+        class="w-full"
+        type={passwordVisible() ? 'text' : 'password'}
+        id={props.id}
+        ref={props.ref}
+      />
+      <span
+        onClick={() => setPasswordVisible(prev => !prev)}
+        class="absolute right-0 top-1 h-full cursor-pointer"
+        children={passwordVisible() ? (
+          <AiOutlineEyeInvisible />
+        ) : (
+          <AiOutlineEye />
+        )}
+      />
+    </span>
+  )
+}
+
 const Auth: Component<{}> = () => {
   const { setAuth } = useAppContext()
   const navigate = useNavigate()        
   const [isLogin, setIsLogin] = createSignal(true);
-  let passwordInput: HTMLInputElement|undefined;
-  let emailInput: HTMLInputElement|undefined;
+  let passwordRef: HTMLInputElement|undefined;
+  let emailRef: HTMLInputElement|undefined;
 
   const redirect = () => {
     setAuth('logged-in')
@@ -40,11 +62,11 @@ const Auth: Component<{}> = () => {
     })
   }
 
-
-  const handleSubmit = submit(async () => {    
+  const handleSubmit = (e: Event ) => {
+    e.preventDefault()
     const result = authSchema.safeParse({
-      email: emailInput?.value,
-      password: passwordInput?.value,
+      email: emailRef?.value,
+      password: passwordRef?.value,
     })
     if (!result.success) {
       console.log(result.error);
@@ -53,7 +75,7 @@ const Auth: Component<{}> = () => {
     const { email, password } = result.data
 
     logUp(email, password)
-  })
+  }
 
   const handleAnon = async () => {
     Firebase.loginAnonymously()
@@ -61,34 +83,16 @@ const Auth: Component<{}> = () => {
     .catch(console.error)
   }
 
-  const [passwordVisible, setPasswordVisible] = createSignal(false);
-
   return (
     <div>
       <h1>{isLogin() ? 'Login' : 'Sign Up'}</h1>
       <form class="flex flex-col" onSubmit={handleSubmit}>
         
         <label for="email">Email</label>
-        <input type="email" id="email" ref={emailInput} />
+        <input type="email" id="email" ref={emailRef} />
         
         <label for="password">Password</label>
-        <span class="relative">
-          <input
-            class="w-full"
-            type={passwordVisible() ? 'text' : 'password'}
-            id="password"
-            ref={passwordInput}
-          />
-          <span
-            onClick={() => setPasswordVisible(prev => !prev)}
-            class="absolute right-0 top-1 h-full cursor-pointer"
-            children={passwordVisible() ? (
-              <AiOutlineEyeInvisible />
-            ) : (
-              <AiOutlineEye />
-            )}
-          />
-        </span>
+        <InputPassword ref={passwordRef} id="password"/>
 
         <button type="submit">
           {isLogin() ? 'Login' : 'Sign Up'}

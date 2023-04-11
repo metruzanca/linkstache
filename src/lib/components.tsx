@@ -3,10 +3,9 @@ import clsx from "clsx";
 
 import { useAppContext } from "./appContext";
 import { A, useLocation, useNavigate } from "solid-start";
-import { groupByDate } from "./util";
-import { Firebase } from "./firebase";
+import { groupByDate, routes } from "./util";
+import { Firebase, Link } from "./firebase";
 import { z } from "zod";
-import { Link } from "./types";
 
 type HamburgerProps = {
   onClick: (state: boolean) => void
@@ -39,7 +38,8 @@ type SidebarProps = {
   close: () => void;
 }
 const Sidebar: ParentComponent<SidebarProps> = (props) => {
-  const { auth } = useAppContext()
+  const { auth, toggleMenu } = useAppContext()
+
   return (
     <div>
       <div
@@ -58,14 +58,19 @@ const Sidebar: ParentComponent<SidebarProps> = (props) => {
         <Show
           when={auth().state === 'logged-in'}
           children={props.children}
-          fallback={<div class="p-4">You are not logged in.</div>}
+          fallback={(
+            <div class="text-center">
+              <h2>You're not logged in.</h2>
+              <A href={routes.auth()} onClick={() => toggleMenu(false)}>Login</A>
+            </div>
+          )}
         />          
       </aside>
     </div>
   )
 }
 
-const Anchor: Component<{ href: string; text: string }> = (props) => {
+const SidebarLink: Component<{ href: string; text: string }> = (props) => {
   const { toggleMenu } = useAppContext();
 
   const location = useLocation();
@@ -98,7 +103,7 @@ export const Navigation: Component<{}> = (props) => {
     await Firebase.logout();
     setAuth('logged-out')
     toggleMenu(false)
-    navigate('/auth')
+    navigate(routes.auth())
   }
 
   return (
@@ -111,10 +116,7 @@ export const Navigation: Component<{}> = (props) => {
           <span>
             <h1 class="text-2xl font-bold inline">
               <A
-                style={{
-                  "pointer-events": auth().state == 'logged-in' ? 'all' : 'none',
-                }}
-                href="/"
+                href={auth().state == 'logged-in' ? routes.app() : routes.home()}
                 onClick={() => toggleMenu(false)}
                 textContent="LinkStache"
               />
@@ -133,9 +135,8 @@ export const Navigation: Component<{}> = (props) => {
           <div>
             <h3 class="text-xl text-center">Navigation</h3>
             <div class="flex justify-center flex-col">
-              <Anchor href="/" text="My Links" />
-              <Anchor href="/sync" text="Sync" />
-              <Anchor href="/settings" text="Settings" />  
+              <SidebarLink href={routes.app()} text="My Links" />
+              <SidebarLink href={routes.settings()} text="Settings" />  
             </div>
           </div>
 
@@ -195,13 +196,18 @@ export const SplashScreen: ParentComponent = (props) => {
     fire.authenticate()
     .then(() => {
       setAuth('logged-in')
-      if (location.pathname == '/auth') {
-        navigate('/')
+      if (location.pathname == routes.auth()) {
+        navigate(routes.app())
       }
     })
     .catch(() => {
       setAuth('logged-out')
-      navigate('/auth')
+      // If user is on the app, redirect to login. Else landing page
+      if (location.pathname.startsWith(routes.app())) {
+        navigate(routes.auth())
+      } else {
+        navigate(routes.home())
+      }
     })
   });
 

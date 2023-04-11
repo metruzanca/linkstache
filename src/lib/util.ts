@@ -33,31 +33,9 @@ export function youtubeQueue(links: string[]) {
   return `https://youtube.com/watch_videos?video_ids=${videoIds.join(',')}`
 }
 
-const subscriptions: Record<string, Unsubscribe> = {}
-/**
- * Like onSnapshot but handles unsubscribing for you.
- * 
- * Call this function multiple times safely.
- */
-export function subscribe(
-  query: CollectionReference<DocumentData>,
-  onNext: (snapshot: QuerySnapshot<DocumentData>) => void,
-) {
-  const path = query.path
-  subscriptions[path]?.()
-  subscriptions[path] = onSnapshot(query, onNext)
-  return subscriptions[path]
-}
-
-type FormSubmit = Event & {
-  submitter: HTMLElement;
-} & {
-  currentTarget: HTMLFormElement;
-  target: Element;
-}
-export const submit = (onSubmit: (e: FormSubmit) => Promise<void>) => {
-  return async (e: FormSubmit) => {
-    e.preventDefault()
-    await onSubmit(e)
-  }
+export const routes = {
+  home: () => '/',
+  app: () => '/app/',
+  settings: () => '/app/settings',
+  auth: () => '/app/auth',
 }
