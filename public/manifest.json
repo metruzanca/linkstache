@@ -1,0 +1,8 @@
+{
+  "name": "LinkStache",
+  "short_name": "LinkStache",
+  "icons": [{
+      "src": "favicon.svg",
+      "sizes": "256x256"
+  }]
+}

@@ -26,6 +26,13 @@ const Home: Component<{}> = (props) => {
         The rational here is to avoid building up a massive list of articles that you'll never read.
       </p>
 
+      <h2>What it's not?</h2>
+      <p>
+        LinkStache is not a bookmarking app. It's not meant to be a place to
+        permanently store links. It's meant to be a place to store links that you
+        want to read, but don't have time to read right now.
+      </p>
+
     </div>
   )
 };

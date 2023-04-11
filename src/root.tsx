@@ -25,6 +25,7 @@ export default function Root() {
       <Head>
         <Title>LinkStache</Title>
         <Meta charset="utf-8" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Body>
